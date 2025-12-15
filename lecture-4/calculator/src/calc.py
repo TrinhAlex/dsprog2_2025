@@ -1,4 +1,5 @@
 import flet as ft
+import math
 
 
 class CalcButton(ft.ElevatedButton):
@@ -44,6 +45,25 @@ class CalculatorApp(ft.Container):
         self.content = ft.Column(
             controls=[
                 ft.Row(controls=[self.result], alignment="end"),
+
+                # Scientific buttons (added)
+                ft.Row(
+                    controls=[
+                        ExtraActionButton(text="x²", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="√", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="1/x", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="sin", button_clicked=self.button_clicked),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ExtraActionButton(text="cos", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="tan", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="ln", button_clicked=self.button_clicked),
+                        ExtraActionButton(text="log", button_clicked=self.button_clicked),
+                    ]
+                ),
+
                 ft.Row(
                     controls=[
                         ExtraActionButton(text="AC", button_clicked=self.button_clicked),
@@ -89,6 +109,7 @@ class CalculatorApp(ft.Container):
     def button_clicked(self, e):
         data = e.control.data
         print(f"Button clicked with data = {data}")
+
         if self.result.value == "Error" or data == "AC":
             self.result.value = "0"
             self.reset()
@@ -120,9 +141,61 @@ class CalculatorApp(ft.Container):
         elif data in ("+/-"):
             if float(self.result.value) > 0:
                 self.result.value = "-" + str(self.result.value)
-
             elif float(self.result.value) < 0:
                 self.result.value = str(self.format_number(abs(float(self.result.value))))
+
+        # Scientific button logic (added)
+        elif data in ("x²"):
+            x = float(self.result.value)
+            self.result.value = self.format_number(x * x)
+            self.reset()
+
+        elif data in ("√"):
+            x = float(self.result.value)
+            if x < 0:
+                self.result.value = "Error"
+            else:
+                self.result.value = self.format_number(math.sqrt(x))
+            self.reset()
+
+        elif data in ("1/x"):
+            x = float(self.result.value)
+            if x == 0:
+                self.result.value = "Error"
+            else:
+                self.result.value = self.format_number(1 / x)
+            self.reset()
+
+        elif data in ("sin"):
+            x = float(self.result.value)
+            self.result.value = self.format_number(math.sin(x))
+            self.reset()
+
+        elif data in ("cos"):
+            x = float(self.result.value)
+            self.result.value = self.format_number(math.cos(x))
+            self.reset()
+
+        elif data in ("tan"):
+            x = float(self.result.value)
+            self.result.value = self.format_number(math.tan(x))
+            self.reset()
+
+        elif data in ("ln"):
+            x = float(self.result.value)
+            if x <= 0:
+                self.result.value = "Error"
+            else:
+                self.result.value = self.format_number(math.log(x))
+            self.reset()
+
+        elif data in ("log"):
+            x = float(self.result.value)
+            if x <= 0:
+                self.result.value = "Error"
+            else:
+                self.result.value = self.format_number(math.log10(x))
+            self.reset()
 
         self.update()
 
@@ -133,7 +206,6 @@ class CalculatorApp(ft.Container):
             return num
 
     def calculate(self, operand1, operand2, operator):
-
         if operator == "+":
             return self.format_number(operand1 + operand2)
 
@@ -162,5 +234,6 @@ def main(page: ft.Page):
 
 
 ft.app(main)
+
 
  
